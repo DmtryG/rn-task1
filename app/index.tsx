@@ -1,0 +1,67 @@
+import React, { useState } from "react";
+import { Alert, ActivityIndicator, View, StyleSheet } from "react-native";
+import MapView, { Marker, Region, LongPressEvent } from "react-native-maps";
+import { useMarkers } from "../context/markers";
+import { useRouter } from "expo-router";
+
+const ORIGINAL_REGION: Region = {
+    latitude: 58,
+    longitude: 56,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+};
+
+export default function MapScreen() {
+    const router = useRouter();
+    const { markers, addMarker } = useMarkers();
+    const [loaded, setLoaded] = useState(false);
+
+    const onLongPress = (e: LongPressEvent) => {
+        try {
+            const id = addMarker(e.nativeEvent.coordinate);
+            router.push(`/marker/${id}`);
+
+        } catch (err) {
+            Alert.alert("Не удалось добавить маркер");
+            console.error(err)
+        }
+    };
+
+    return (
+        <View style = {styles.container}>
+            {!loaded && (
+                <View style = {styles.loader}>
+                    <ActivityIndicator size = "large" />
+                </View>
+            )}
+
+            <MapView 
+            style = {StyleSheet.absoluteFill}
+            initialRegion = {ORIGINAL_REGION}
+            onMapReady={() => setLoaded (true)}
+            onLongPress={onLongPress}
+            >
+                {markers.map (m => (
+                    <Marker
+                    key = {m.id}
+                    coordinate={m.coordinate}
+                    title = {m.title ?? "Маркер"}
+                    description = {`Изображений: ${m.images.length}`}
+                    onPress={() => router.push(`/marker/${m.id}`)}
+                    />
+                ))}
+                </MapView>
+        </View>
+    )
+
+}
+
+const styles = StyleSheet.create ({
+    container: { flex: 1},
+    loader: {
+        ...StyleSheet.absoluteFillObject,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white",
+    },
+});
