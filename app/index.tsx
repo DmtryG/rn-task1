@@ -5,8 +5,8 @@ import { useMarkers } from "../context/markers";
 import { useRouter } from "expo-router";
 
 const DEFAULT_REGION: Region = {
-    latitude: 58,
-    longitude: 56,
+    latitude: 58.0105,
+    longitude: 56.2294,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
 };
