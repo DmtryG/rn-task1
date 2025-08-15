@@ -4,7 +4,7 @@ import MapView, { Marker, Region, LongPressEvent } from "react-native-maps";
 import { useMarkers } from "../context/markers";
 import { useRouter } from "expo-router";
 
-const ORIGINAL_REGION: Region = {
+const DEFAULT_REGION: Region = {
     latitude: 58,
     longitude: 56,
     latitudeDelta: 0.05,
@@ -12,9 +12,9 @@ const ORIGINAL_REGION: Region = {
 };
 
 export default function MapScreen() {
-    const router = useRouter();
-    const { markers, addMarker } = useMarkers();
-    const [loaded, setLoaded] = useState(false);
+    const router = useRouter(); // навигация между экранами
+    const { markers, addMarker } = useMarkers(); // получаем список маркеров и функцию добавления
+    const [loaded, setLoaded] = useState(false); // статус загрузки карты
 
     const onLongPress = (e: LongPressEvent) => {
         try {
@@ -37,9 +37,9 @@ export default function MapScreen() {
 
             <MapView 
             style = {StyleSheet.absoluteFill}
-            initialRegion = {ORIGINAL_REGION}
-            onMapReady={() => setLoaded (true)}
-            onLongPress={onLongPress}
+            initialRegion = {DEFAULT_REGION}
+            onMapReady={() => setLoaded (true)} // убираем лоадер после полной прогрузки карты
+            onLongPress={onLongPress} 
             >
                 {markers.map (m => (
                     <Marker
@@ -47,7 +47,7 @@ export default function MapScreen() {
                     coordinate={m.coordinate}
                     title = {m.title ?? "Маркер"}
                     description = {`Изображений: ${m.images.length}`}
-                    onPress={() => router.push(`/marker/${m.id}`)}
+                    onPress={() => router.push(`/marker/${m.id}`)} // переход в детали
                     />
                 ))}
                 </MapView>
